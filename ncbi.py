@@ -1,0 +1,55 @@
+from xmljson import yahoo as bf
+from xml.etree import ElementTree
+import requests
+import json
+import requests_cache
+
+requests_cache.install_cache('demo_cache')
+
+def ncbiGBSeSearch(key):
+    url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi/'
+
+    params = dict(db='gds',term=key)
+
+    resp = requests.get(url=url, params=params)
+    
+    tree = ElementTree.fromstring(resp.content)
+
+    data = bf.data(tree)
+
+    result = []
+    
+    for d in data['eSearchResult']['IdList']['Id'][0:5]:
+        print d
+        result.append(getSummary(d))
+
+    return result
+
+
+def getSummary(key):
+
+    url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi/"
+
+    params = dict(db='gds',id=key)
+
+    resp = requests.get(url=url, params=params)
+    
+    tree = ElementTree.fromstring(resp.content)
+    
+    data = bf.data(tree)
+
+    return toJSON(data['eSummaryResult']['DocSum']['Item'][2].get('content'),
+                  data['eSummaryResult']['DocSum']['Item'][3].get('content'),
+                  data['eSummaryResult']['DocSum']['Item'][25].get('content'),
+                  "https://www.ncbi.nlm.nih.gov/sites/GDSbrowser?acc=GDS"+key
+)
+
+def toJSON(title,summary,dataLink,siteLink):
+    data = {}
+    data['title'] = title
+    data['summary'] = summary
+    data['dataLink'] = dataLink
+    data['siteLink'] = siteLink
+
+    return data
+

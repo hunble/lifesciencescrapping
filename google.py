@@ -4,7 +4,7 @@ import Result
 
 from bs4 import BeautifulSoup
 
-requests_cache.install_cache('GOOGLEDataSets')
+#requests_cache.install_cache('GOOGLEDataSets')
 
 def googleDataSets(query, noOfResults=5):
 

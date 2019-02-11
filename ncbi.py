@@ -5,7 +5,6 @@ import json
 import requests_cache
 import Result
 
-
 requests_cache.install_cache('demo_cache')
 
 def ncbiGBSeSearch(key):

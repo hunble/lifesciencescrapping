@@ -1,94 +1,68 @@
-============
-Life Science
-============
+# Life Science Search Engine
 
-.. image:: https://img.shields.io/pypi/v/Scrapy.svg
-   :target: https://pypi.python.org/pypi/Scrapy
-   :alt: PyPI Version
+This is a deplyable website plus API for searching NCBI Geo Data sets data store and scraping google data sets to find the most relivant results to your life science query.
 
-.. image:: https://img.shields.io/pypi/pyversions/Scrapy.svg
-   :target: https://pypi.python.org/pypi/Scrapy
-   :alt: Supported Python Versions
+## Getting Started
 
-.. image:: https://img.shields.io/travis/scrapy/scrapy/master.svg
-   :target: https://travis-ci.org/scrapy/scrapy
-   :alt: Build Status
+The web site includes a Flask based API to extend the project and build client based solutions over the searhing api. Build up on Flast and Flask API to support API interface. 
 
-.. image:: https://img.shields.io/badge/wheel-yes-brightgreen.svg
-   :target: https://pypi.python.org/pypi/Scrapy
-   :alt: Wheel Status
+### Prerequisites
 
-.. image:: https://img.shields.io/codecov/c/github/scrapy/scrapy/master.svg
-   :target: https://codecov.io/github/scrapy/scrapy?branch=master
-   :alt: Coverage report
+Pythin 2.7
+pip (compatible with Pythion 2.7)
 
-.. image:: https://anaconda.org/conda-forge/scrapy/badges/version.svg
-   :target: https://anaconda.org/conda-forge/scrapy
-   :alt: Conda Version
+```
+Give examples
+```
 
+### Deployment
 
-Overview
-========
+The website can be depleyed using the following single linear command
 
-Scrapy is a fast high-level web crawling and web scraping framework, used to
-crawl websites and extract structured data from their pages. It can be used for
-a wide range of purposes, from data mining to monitoring and automated testing.
+```
+cd ~/PATH_TO_REPO
+cd lifesciencescrapping
+```
+and
+```
+python api_server.py
+```
+and visit in your browser
+```
+http://localhost:8000
+```
 
-For more information including a list of features check the Scrapy homepage at:
-https://scrapy.org
+## API
 
-Requirements
-============
+The api can be quried using the folling curl
 
-* Python 2.7 or Python 3.4+
-* Works on Linux, Windows, Mac OSX, BSD
+# Example for searching cancer
 
-Install
-=======
+```
+curl "http://hunle.pythonanywhere.com/api/cancer" -H "DNT: 1" -H "Accept-Encoding: gzip, deflate" -H "Accept-Language: en-US,en;q=0.9" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36" -H "Accept: */*" -H "Referer: http://hunle.pythonanywhere.com/" -H "Cookie: sessionid=nv8118jaf9w69xt154d50yl099ybmx5l; _ga=GA1.2.1176568897.1549879661; _gid=GA1.2.834200829.1549879661" -H "Connection: keep-alive" --compressed
+```
 
-The quick way::
+## Demo
 
-    pip install scrapy
+For demo please visit : [Here] ("http://hunle.pythonanywhere.com/")
 
-For more details see the install section in the documentation:
-https://docs.scrapy.org/en/latest/intro/install.html
+## Authors
 
-Documentation
-=============
+* **Muhammad Hunble Dhillon** [PurpleBooth](https://www.linkedin.com/in/muhammad-hunble-dhillon-b64b84a0/)
 
-Documentation is available online at https://docs.scrapy.org/ and in the ``docs``
-directory.
+See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 
-Releases
-========
+## License
 
-You can find release notes at https://docs.scrapy.org/en/latest/news.html
+* This is open source project, please fork extend add more arsers and feel free to get in touch with me.
 
-Community (blog, twitter, mail list, IRC)
-=========================================
+## Acknowledgments
 
-See https://scrapy.org/community/
-
-Contributing
-============
-
-See https://docs.scrapy.org/en/master/contributing.html
-
-Code of Conduct
----------------
-
-Please note that this project is released with a Contributor Code of Conduct
-(see https://github.com/scrapy/scrapy/blob/master/CODE_OF_CONDUCT.md).
-
-By participating in this project you agree to abide by its terms.
-Please report unacceptable behavior to opensource@scrapinghub.com.
-
-Companies using Scrapy
-======================
-
-See https://scrapy.org/companies/
-
-Commercial Support
-==================
-
-See https://scrapy.org/support/
+* [Bilal Wajid] (https://pk.linkedin.com/in/dr-bilal-wajid-98949276)
+* [NCBI API](https://www.ncbi.nlm.nih.gov/home/develop/api/)
+* [Google Datasets Search Beta](https://toolbox.google.com/datasetsearch)
+* [NCBI API](http://semver.org/)
+* [Requests](http://docs.python-requests.org/en/master/)
+* [Beautiful Soup] (https://www.crummy.com/software/BeautifulSoup/bs4/doc/)
+* [xmljson] (https://pydigger.com/pypi/xmljson)
+* [Python Anywhere] ("https://www.pythonanywhere.com")

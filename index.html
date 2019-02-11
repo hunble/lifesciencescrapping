@@ -34,7 +34,7 @@
     	<h3>Results</h3>
 		<table id='mytable' class="table">
 		<tbody>
-		<tr><td>Title</td><td>Summary</td><td>Data Link</td><td>Site Link</td></tr>
+		<tr><td>Source</td><td>Title</td><td>Summary</td><td>Data Link</td><td>Site Link</td></tr>
 		</tbody>
 		</table>
     </div>
@@ -64,24 +64,28 @@ function setup() {
 
 function loadDoc() {
 	cleanTable()
-	document.getElementById("search_status").innerHTML = "Loading..."
+	document.getElementById("search_status").innerHTML = "👨‍💻Loading..."
 
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
 
-	document.getElementById("search_status").innerHTML += "</br> readyState: "+this.readyState + " status:" +this.status
-		if (this.readyState == 4 && this.status == 200) {
+	if (this.readyState % 2 == 0)
+	document.getElementById("search_status").innerHTML += "</br>🔍 readyState: "+this.readyState + " status:" +this.status
+	else
+	document.getElementById("search_status").innerHTML += "</br>🔎 readyState: "+this.readyState + " status:" +this.status
 
-		  document.getElementById("search_status").innerHTML += "</br>Success!"
+	if (this.readyState == 4 && this.status == 200) {
 
-		  var records =  JSON.parse(this.responseText)
+			document.getElementById("search_status").innerHTML += "</br>✅Success!"
+
+			var records =  JSON.parse(this.responseText)
 
 			for (i = 0; i < records.length; i++) { 
-		      	addRow(records[i].title, records[i].summary, records[i].dataLink,records[i].siteLink)
+				addRow(records[i].title, records[i].summary, records[i].dataLink,records[i].siteLink, records[i].source, records[i].sourceImage)
 			}
 
-		} else if (this.status == 400 || this.status == 404) {
-			 document.getElementById("search_status").innerHTML += "</br>Failed!"
+		} else if (this.status >= 300) {
+			 document.getElementById("search_status").innerHTML += "</br>😔Failed!"
 		}
 	};
 
@@ -100,19 +104,20 @@ function cleanTable(){
 
 }
 
-function addRow(title,summary,dataLink,siteLink)
+function addRow(title,summary,dataLink,siteLink, siteName, siteImage)
 {
          if (!document.getElementsByTagName) return;
          tabBody=document.getElementsByTagName("tbody").item(0);
          row=document.createElement("tr");
+		 cell0 = document.createElement("td");
          cell1 = document.createElement("td");
          cell2 = document.createElement("td");
          cell3 = document.createElement("td");
          cell4 = document.createElement("td");	
          textnode1=document.createTextNode(title);
          textnode2=document.createTextNode(summary);
-         textnode3=document.createTextNode("FTP");
-         textnode4=document.createTextNode("NCBI");	
+         textnode3=document.createTextNode("Download Page");
+         textnode4=document.createTextNode("Open details at "+siteName);	
 
 		var a = document.createElement('a');
 		a.target="_blank"
@@ -120,18 +125,31 @@ function addRow(title,summary,dataLink,siteLink)
 		a.title = title;
 		a.href = dataLink;
 
-
+		var img = document.createElement('img');
+		img.src = siteImage
+		//img.style.height = '40px';
+		img.style.width = '80px';
+		
+	
 		var b = document.createElement('a');
 		b.target="_blank"
 		b.appendChild(textnode4);
 		b.title = title;
 		b.href = siteLink;
 
-         cell1.appendChild(textnode1);
-         cell2.appendChild(textnode2);
-	     cell3.appendChild(a);
-	     cell4.appendChild(b);
+		var c = document.createElement('a');
+		c.target="_blank"
+		c.appendChild(img);
+		c.title = title;
+		c.href = siteLink;
+		
+		cell0.appendChild(c)
+		cell1.appendChild(textnode1);
+        cell2.appendChild(textnode2);
+	    cell3.appendChild(a);
+	    cell4.appendChild(b);
 
+         row.appendChild(cell0);
          row.appendChild(cell1);
          row.appendChild(cell2);
 		 row.appendChild(cell3);

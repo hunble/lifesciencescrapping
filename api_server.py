@@ -5,7 +5,7 @@ import json
 from flask import jsonify
 #from flask.ext.jsonpify import jsonify
 import ncbi as ncbi
-
+import google as gds
 
 app = Flask(__name__)
 api = Api(app)
@@ -47,15 +47,19 @@ def get_resource(path):  # pragma: no cover
 
 class Search(Resource):
     def get(self, key):
-        print("A search made for: ", key)
+		print("A search made for: ", key)
 
-        data = ncbi.ncbiGBSeSearch(key)
+		data = ncbi.ncbiGBSeSearch(key)
+		googleResult = gds.googleDataSets(key, 5)
+		
+		print("length of google results", len(googleResult))
+		
+		for d in googleResult:
+			data.append(d)
 
-        print data
-        
-#        return json.dumps(lmop)
-        return jsonify(data)
-        
+		#        return json.dumps(lmop)
+		return jsonify(data)
+
 api.add_resource(Search, '/api/<key>') # Route_3
 
 if __name__ == '__main__':

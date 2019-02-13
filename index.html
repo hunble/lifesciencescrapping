@@ -20,9 +20,9 @@
 
 <div class="container">
 	<div class="input-group">
-	    <input type="text" class="form-control" placeholder="Search" id= "search_input">
+	    <input type="text" class="form-control input-lg" placeholder="Search" id= "search_input">
 	    <div class="input-group-btn">
-	      <button class="btn btn-default" onclick="loadDoc()" id = "search_button">
+	      <button class="btn btn-default input-lg" onclick="loadDoc()" id = "search_button">
 	        <i class="glyphicon glyphicon-search"></i>
 	      </button>
 	    </div>
@@ -32,21 +32,24 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-sm-10">
+    <div class="col-sm-10" id = "results_view">
     	<h3>Results</h3>
 		<table id='mytable' class="table">
-		<tbody>
-		<tr><td>Title</td><td>Summary</td><td>Data Link</td><td>Site Link</td></tr>
-		</tbody>
+			<tbody>
+			</tbody>
 		</table>
     </div>
-    <div class="col-sm-2 ">
+    <div class="col-sm-2" id = "status_view">
       	<h3>Status</h3>
   		<label id = "search_status"></label>
     </div>
   </div>
+	<div class="container" id = "pagerView">
+		<ul class="pagination pagination-centered pagination-lg" id = "pagerListView">
+		</ul> 
+	</div>
 </div>
-
+</div>
 
 <script>
 
@@ -61,36 +64,47 @@ function setup() {
 	    document.getElementById("search_button").click();
 	  }
 	});
+
+	cleanView()
 }
 
-function loadDoc() {
-	cleanTable()
-	document.getElementById("search_status").innerHTML = "</br>?????Loading..."
+function loadDoc(pageNumber=0) {
+	cleanView()
+	showStatusView()
+	document.getElementById("search_status").innerHTML = "👨‍💻 Loading..."
 
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
 
 	if (this.readyState % 2 == 0)
-	document.getElementById("search_status").innerHTML += "</br>?? readyState: "+this.readyState + " status:" +this.status
+	document.getElementById("search_status").innerHTML += "</br>🔍 readyState: "+this.readyState + " status:" +this.status
 	else
-	document.getElementById("search_status").innerHTML += "</br>?? readyState: "+this.readyState + " status:" +this.status
+	document.getElementById("search_status").innerHTML += "</br>⏳ readyState: "+this.readyState + " status:" +this.status
 
 	if (this.readyState == 4 && this.status == 200) {
 
-			document.getElementById("search_status").innerHTML += "</br>?? Success!"
-
 			var records =  JSON.parse(this.responseText)
 
+			setUpPagination(records.pages)
+			showResultsView()
+
+			document.getElementById("search_status").innerHTML += "</br>✅ Success!"
+
+			document.getElementById("search_status").innerHTML += "</br> Total "+records.pages+" pages found. Showing "+records.records.length+" records."
+		
+			records = records.records
+
+
 			for (i = 0; i < records.length; i++) {
-				addRow(records[i].title, records[i].summary, records[i].dataLink,records[i].siteLink, records[i].source, records[i].sourceImage)
+				addRow2(records[i].title, records[i].summary, records[i].dataLink,records[i].siteLink, records[i].source, records[i].sourceImage)
 			}
 
-		} else if (this.status >= 300) {
-			 document.getElementById("search_status").innerHTML += "</br>? Failed!"
+		} else if (this.status >= 300 || (this.status == 0 && this.readyState == 4 )) {
+			 document.getElementById("search_status").innerHTML += "</br>❌ Failed!"
 		}
 	};
 
-	var url = "/api/"+document.getElementById("search_input").value
+	var url = "/api/search?query="+document.getElementById("search_input").value+"&pageNumber="+pageNumber+"&pageSize="+30
 	xhttp.open("GET", url, true);
 	xhttp.send();
 }
@@ -99,65 +113,184 @@ function cleanTable(){
 
 	var x = document.getElementById("mytable");
 
-
-	while ( x.rows.length > 1)
+	while ( x.rows.length > 0)
 		x.deleteRow(x.rows.length - 1)
 
 }
 
+function cleanView() {
+	var x = document.getElementById("status_view");
+	var y = document.getElementById("results_view");
+
+	x.style.display = "none";
+	y.style.display = "none";
+
+	cleanTable()
+	setUpPagination(0)
+}
+
+function showStatusView(){
+	var x = document.getElementById("status_view");
+	x.style.display = "block";
+}
+
+function showResultsView(){
+	var y = document.getElementById("results_view");
+	y.style.display = "block";	
+}
+
+
+function setUpPagination(pages){
+
+	var x = document.getElementById("pagerView");
+	var y = document.getElementById("pagerListView");
+
+	while( y.firstChild ){
+	  y.removeChild( y.firstChild );
+	}
+
+
+	if (pages > 0) {
+		x.style.display = "block";
+
+		var i;
+		for (i = 0 ; i< pages ; i++) {
+
+			var li = document.createElement('li');
+			li.setAttribute("onClick","loadDoc("+i+")")
+			
+
+			textnode = document.createTextNode(i+1);
+			
+			var a = document.createElement('a');
+			a.appendChild(textnode);
+
+
+			li.appendChild(a)
+
+			y.appendChild(li)
+
+		}
+
+	} else {
+	    x.style.display = "none";
+	}
+}
+
 function addRow(title,summary,dataLink,siteLink, siteName, siteImage)
 {
-         if (!document.getElementsByTagName) return;
-         tabBody=document.getElementsByTagName("tbody").item(0);
-         row=document.createElement("tr");
-		 cell0 = document.createElement("td");
-         cell1 = document.createElement("td");
-         cell2 = document.createElement("td");
-         cell3 = document.createElement("td");
-         cell4 = document.createElement("td");
-         textnode1=document.createTextNode(title);
-         textnode2=document.createTextNode(summary);
-         textnode3=document.createTextNode("Download Page");
-         textnode4=document.createTextNode("Open details at "+siteName);
+	if (!document.getElementsByTagName) return;
+	tabBody=document.getElementsByTagName("tbody").item(0);
+	row=document.createElement("tr");
+	
+	cell0 = document.createElement("td");
+	cell1 = document.createElement("td");
+	cell2 = document.createElement("td");
+	cell3 = document.createElement("td");
+	cell4 = document.createElement("td");
 
-		var a = document.createElement('a');
-		a.target="_blank"
-		a.appendChild(textnode3);
-		a.title = title;
-		a.href = dataLink;
+	textnode1=document.createTextNode(title);
+	textnode2=document.createTextNode(summary);
+	textnode3=document.createTextNode("Download Page");
+	textnode4=document.createTextNode("Open details at "+siteName);
 
-		var img = document.createElement('img');
-		img.src = siteImage
-		//img.style.height = '40px';
-		img.style.width = '80px';
+	var a = document.createElement('a');
+	a.target="_blank"
+	a.appendChild(textnode3);
+	a.title = title;
+	a.href = dataLink;
 
-
-		var b = document.createElement('a');
-		b.target="_blank"
-		b.appendChild(textnode4);
-		b.title = title;
-		b.href = siteLink;
-
-		var c = document.createElement('a');
-		c.target="_blank"
-		c.appendChild(img);
-		c.title = title;
-		c.href = siteLink;
-
-		cell0.appendChild(c)
-		cell1.appendChild(textnode1);
-        cell2.appendChild(textnode2);
-	    cell3.appendChild(a);
-	    cell4.appendChild(b);
-
-         row.appendChild(cell0);
-         row.appendChild(cell1);
-         row.appendChild(cell2);
-		 row.appendChild(cell3);
-		 row.appendChild(cell4);
-         tabBody.appendChild(row);
+	var img = document.createElement('img');
+	img.src = siteImage
+	//img.style.height = '40px';
+	img.style.width = '80px';
 
 
+	var b = document.createElement('a');
+	b.target="_blank"
+	b.appendChild(textnode4);
+	b.title = title;
+	b.href = siteLink;
+
+	var c = document.createElement('a');
+	c.target="_blank"
+	c.appendChild(img);
+	c.title = title;
+	c.href = siteLink;
+
+	cell0.appendChild(c)
+	cell1.appendChild(textnode1);
+	cell2.appendChild(textnode2);
+	cell3.appendChild(a);
+	cell4.appendChild(b);
+
+	row.appendChild(cell0);
+	row.appendChild(cell1);
+	row.appendChild(cell2);
+	row.appendChild(cell3);
+	row.appendChild(cell4);
+	tabBody.appendChild(row);
+}
+
+function addRow2(title,summary,dataLink,siteLink, siteName, siteImage)
+{
+	if (!document.getElementsByTagName) return;
+	tabBody=document.getElementsByTagName("tbody").item(0);
+	row=document.createElement("tr");
+	
+	cell0 = document.createElement("td");
+
+	br = document.createElement("br");	
+
+	var img = document.createElement('img');
+	img.src = siteImage
+	img.style.width = '80px';
+
+	textnode1=document.createTextNode(title);
+	textnode2=document.createTextNode(summary);
+	textnode3=document.createTextNode("Download Page");
+	textnode4=document.createTextNode("Open details at "+siteName);
+	textnode5=document.createTextNode(" | ");
+
+
+	var site_Link1 = document.createElement('a');
+	site_Link1.target="_blank"
+	site_Link1.appendChild(textnode1);
+	site_Link1.href = siteLink;
+
+	bold = document.createElement("b");
+	bold.appendChild(textnode1)
+	site_Link1.appendChild(bold)
+
+	small = document.createElement("small");
+	small.appendChild(textnode2)
+
+
+	var data_Link = document.createElement('a');
+	data_Link.target="_blank"
+	data_Link.appendChild(textnode3);
+	data_Link.href = dataLink;
+
+	var site_Link2 = document.createElement('a');
+	site_Link2.target="_blank"
+	site_Link2.appendChild(textnode4);
+	site_Link2.href = siteLink;
+
+
+
+	cell0.appendChild(img)
+	cell0.appendChild(br)
+	cell0.appendChild(site_Link1)
+	cell0.appendChild(br.cloneNode())
+	cell0.appendChild(small)
+	cell0.appendChild(br.cloneNode())
+	cell0.appendChild(data_Link)
+	cell0.appendChild(textnode5)
+	cell0.appendChild(site_Link2)
+
+	row.appendChild(cell0);
+
+	tabBody.appendChild(row);
 }
 </script>
 

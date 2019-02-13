@@ -1,3 +1,10 @@
+import requests_cache
+
+GOOGLE = "GOOGLE"
+NCBI = "NCBI"
+
+requests_cache.install_cache('demo_cache')
+
 def toJSON(title,summary,dataLink,siteLink,source = "Unknown", sourceImage = "https://media.wired.com/photos/5a0201b14834c514857a7ed7/master/w_582,c_limit/1217-WI-APHIST-01.jpg" ):
 	data = {}
 	data['title'] = title
@@ -8,4 +15,9 @@ def toJSON(title,summary,dataLink,siteLink,source = "Unknown", sourceImage = "ht
 	data['sourceImage'] = sourceImage
 	#print(data)
 	return data
+
+
+
+
+
 

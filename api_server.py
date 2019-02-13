@@ -4,8 +4,10 @@ from flask_restful import Resource, Api
 import json
 from flask import jsonify
 #from flask.ext.jsonpify import jsonify
+import googleDataSetSearch as gds
 import ncbi as ncbi
-import google as gds
+import Result
+import math
 
 app = Flask(__name__)
 api = Api(app)
@@ -46,21 +48,52 @@ def get_resource(path):  # pragma: no cover
     return Response(content, mimetype=mimetype)
 
 class Search(Resource):
-    def get(self, key):
-		print("A search made for: ", key)
+    def get(self):
+        args = request.args
+        print (args) # For debugging
+        query = args['query']
+        pageNumber = int(args['pageNumber'])
+        pageSize = int(args['pageSize'])
 
-		data = ncbi.ncbiGBSeSearch(key)
-		googleResult = gds.googleDataSets(key, 5)
-		
-		print("length of google results", len(googleResult))
-		
-		for d in googleResult:
-			data.append(d)
 
-		#        return json.dumps(lmop)
-		return jsonify(data)
+        print("A search made for: ", query, pageNumber, pageSize, gds)
 
-api.add_resource(Search, '/api/<key>') # Route_3
+        data = ncbi.search(query)
+        googleResult = gds.search(query)
+
+        data.extend(googleResult)
+
+
+          #  1,2,3,4, 5,6,7, 8,9
+
+        results = []
+
+
+
+        # here goes the paginantion logic
+
+        pages = math.ceil(float(len(data))/float(pageSize))
+
+        if pages >= pageNumber:
+
+            s = pageNumber * pageSize
+            e = (pageNumber * pageSize)  + pageSize 
+
+            for d in data[s:e]:
+                if d[1] == Result.GOOGLE :
+                    results.append(gds.getSummary(d[0]))
+                elif d[1] == Result.NCBI :
+                    results.append(ncbi.getSummary(d[0]))
+
+        result = {}
+
+        result["pages"] =  pages
+        result["records"] =  results
+
+
+        return jsonify(result)
+
+api.add_resource(Search, '/api/search', endpoint='search') # Route_3
 
 if __name__ == '__main__':
      app.run(port='8000')

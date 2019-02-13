@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 
 def search(query): 
 
-	payload = {'query': 'boston education data'}
+	payload = {'query': query}
 
 	r = requests.get('https://toolbox.google.com/datasetsearch/search', params=payload)
 
@@ -72,7 +72,7 @@ def googleDataSets(query, noOfResults=5):
 
 	
 
-	payload = {'query': 'boston education data'}
+	payload = {'query': query}
 
 	r = requests.get('https://toolbox.google.com/datasetsearch/search', params=payload)
 

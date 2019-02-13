@@ -6,6 +6,7 @@ from flask import jsonify
 #from flask.ext.jsonpify import jsonify
 import googleDataSetSearch as gds
 import ncbi as ncbi
+import dataGov as gov
 import Result
 import math
 
@@ -60,7 +61,9 @@ class Search(Resource):
 
         data = ncbi.search(query)
         googleResult = gds.search(query)
+        govResult = gov.search(query)
 
+        data.extend(govResult)
         data.extend(googleResult)
 
 
@@ -84,6 +87,8 @@ class Search(Resource):
                     results.append(gds.getSummary(d[0]))
                 elif d[1] == Result.NCBI :
                     results.append(ncbi.getSummary(d[0]))
+                elif d[1] == Result.DATA_GOV :
+                    results.append(gov.getSummary(d[0]))
 
         result = {}
 
@@ -93,7 +98,36 @@ class Search(Resource):
 
         return jsonify(result)
 
+
+class Pages(Resource):
+    def get(self):
+        args = request.args
+        print (args) # For debugging
+        query = args['query']
+        pageSize = int(args['pageSize'])
+
+        print("A search made for: ", query, pageSize, gds)
+
+        data = ncbi.search(query)
+        googleResult = gds.search(query)   
+        govResult = gov.search(query)
+
+        data.extend(googleResult)
+        data.extend(govResult)
+
+
+        pages = math.ceil(float(len(data))/float(pageSize))
+
+        result = {}
+
+        result["total_reocrds"] = len(data)
+        result["pages"] = pages
+
+        return jsonify(result)
+
 api.add_resource(Search, '/api/search', endpoint='search') # Route_3
+api.add_resource(Pages, '/api/pages', endpoint='pages') # Route_3
+
 
 if __name__ == '__main__':
      app.run(port='8000')

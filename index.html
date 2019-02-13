@@ -19,27 +19,34 @@
 
 
 <div class="container">
-	<div class="input-group">
-	    <input type="text" class="form-control input-lg" placeholder="Search" id= "search_input">
-	    <div class="input-group-btn">
-	      <button class="btn btn-default input-lg" onclick="loadDoc()" id = "search_button">
-	        <i class="glyphicon glyphicon-search"></i>
-	      </button>
-	    </div>
-	 </div>
+	<div class="row">
+	    <div class="col-sm-10">
+			<div class="input-group">
+			    <input type="text" class="form-control input-lg" placeholder="Search" id= "search_input">
+			    <div class="input-group-btn">
+			      <button class="btn btn-default input-lg" onclick="loadDoc()" id = "search_button">
+			        <i class="glyphicon glyphicon-search"></i>
+			      </button>
+			    </div>
+			 </div>
+		 </div>
+ 	    <div class="col-sm-2">
+		    <input type="number" class="form-control input-lg" placeholder = "Page Size" onchange = "setPageSize()" id= "page_size" min = "1" max = "70">
+ 	    </div>
+	</div>
 </div>
 
 
 <div class="container">
   <div class="row">
-    <div class="col-sm-10" id = "results_view">
+    <div class="col-sm-8" id = "results_view">
     	<h3>Results</h3>
 		<table id='mytable' class="table">
 			<tbody>
 			</tbody>
 		</table>
     </div>
-    <div class="col-sm-2" id = "status_view">
+    <div class="col-sm-4" id = "status_view">
       	<h3>Status</h3>
   		<label id = "search_status"></label>
     </div>
@@ -53,10 +60,21 @@
 
 <script>
 
+PAGE_SIZE = 30
+
+function setPageSize(){
+
+	console.log("changed");
+	PAGE_SIZE = document.getElementById("page_size").value
+	setCookie("PAGE_SIZE",PAGE_SIZE, 4)
+}
 
 setup()
 
 function setup() {
+
+	document.getElementById("page_size").value = getCookie("PAGE_SIZE")
+
 	var input = document.getElementById("search_input");
 	input.addEventListener("keyup", function(event) {
 	  event.preventDefault();
@@ -71,6 +89,9 @@ function setup() {
 function loadDoc(pageNumber=0) {
 	cleanView()
 	showStatusView()
+
+	totalPages(document.getElementById("search_input").value)
+
 	document.getElementById("search_status").innerHTML = "👨‍💻 Loading..."
 
 	var xhttp = new XMLHttpRequest();
@@ -104,10 +125,39 @@ function loadDoc(pageNumber=0) {
 		}
 	};
 
-	var url = "/api/search?query="+document.getElementById("search_input").value+"&pageNumber="+pageNumber+"&pageSize="+30
+	var url = "/api/search?query="+document.getElementById("search_input").value+"&pageNumber="+pageNumber+"&pageSize="+PAGE_SIZE
 	xhttp.open("GET", url, true);
 	xhttp.send();
 }
+
+
+function totalPages(query) {
+
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+
+		if (this.readyState % 2 == 0)
+		document.getElementById("search_status").innerHTML += "</br>🔍 readyState: "+this.readyState + " status:" +this.status
+		else
+		document.getElementById("search_status").innerHTML += "</br>⏳ readyState: "+this.readyState + " status:" +this.status
+
+		if (this.readyState == 4 && this.status == 200) {
+
+			var records =  JSON.parse(this.responseText)
+
+			document.getElementById("search_status").innerHTML += "</br>✅ Success! "+records.total_reocrds+" records found."
+			document.getElementById("search_status").innerHTML += "</br> Which is "+records.pages+" pages. Give me a while to fetch information form those records, if i am taking to much time try playing around with number of records in each fetch."
+
+		} else if (this.status >= 300 || (this.status == 0 && this.readyState == 4 )) {
+			 document.getElementById("search_status").innerHTML += "</br>❌ Page Load Failed!"
+		}
+	};
+
+	var url = "/api/pages?query="+query+"&pageSize="+PAGE_SIZE
+	xhttp.open("GET", url, true);
+	xhttp.send();
+}
+
 
 function cleanTable(){
 
@@ -291,6 +341,30 @@ function addRow2(title,summary,dataLink,siteLink, siteName, siteImage)
 	row.appendChild(cell0);
 
 	tabBody.appendChild(row);
+}
+
+
+function setCookie(name,value,days) {
+    var expires = "";
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days*24*60*60*1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+}
+function getCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0;i < ca.length;i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    }
+    return null;
+}
+function eraseCookie(name) {   
+    document.cookie = name+'=; Max-Age=-99999999;';  
 }
 </script>
 

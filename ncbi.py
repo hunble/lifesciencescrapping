@@ -23,15 +23,16 @@ def ncbiGBSeSearch(key):
 	try:
 		if len(data['eSearchResult']['IdList']['Id']) <= 5:
 			for d in data['eSearchResult']['IdList']['Id']:
-				print d
 				result.append(getSummary(d))
 		else:
 			for d in data['eSearchResult']['IdList']['Id'][0:5]:
-				print d
 				result.append(getSummary(d))
 
 	except:
 		print("No result found at ncbi")
+
+	print(len(result)," results found")
+
 
 	return result
 

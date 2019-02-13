@@ -23,12 +23,14 @@ def search(query):
 
 	for x in list:
 	
-		docid = x.find('div')['data-docid']
 
-		r = [docid , Result.GOOGLE]
-
-		results.append(r)
-
+		try: 
+			docid = x.find('div')['data-docid']
+			r = [docid , Result.GOOGLE]
+			results.append(r)
+		except:
+			print("some forign cell encountered")
+			
 	return results
 
 
@@ -135,7 +137,7 @@ def googleDataSets(query, noOfResults=5):
 	return result
 
 
-# data = search("cancer")
+# data = search("caner")
 
 # for x,r in data:
 # 	print("\nFor UUID: ", x)

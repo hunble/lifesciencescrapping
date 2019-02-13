@@ -92,6 +92,7 @@ class Search(Resource):
 
         result = {}
 
+        result["query"] = query
         result["pages"] =  pages
         result["records"] =  results
 
@@ -120,6 +121,7 @@ class Pages(Resource):
 
         result = {}
 
+        result["query"] = query
         result["total_reocrds"] = len(data)
         result["pages"] = pages
 

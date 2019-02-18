@@ -39,7 +39,7 @@ http://hunle.pythonanywhere.com/api/search?query=cancer&pageNumber=0&pageSize=30
 
 ## Demo
 
-For demo please visit : [Here]("http://hunle.pythonanywhere.com/")
+For demo please visit : [Here]("http://hunle.pythonanywhere.com")
 
 ## Authors
 

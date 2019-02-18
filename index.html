@@ -3,11 +3,12 @@
 <head>
   <title>Life Science Search Engine</title>
   <meta charset="utf-8">
-  <link rel="icon" href="https://www.clipartmax.com/png/full/192-1921017_dna-structure-clipart-life-science-dna-icon-transparent-background.png" type="image/png" sizes="16x16">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+  <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 </head>
 <body>
 
@@ -15,6 +16,7 @@
 	<img src="https://www.clipartmax.com/png/full/192-1921017_dna-structure-clipart-life-science-dna-icon-transparent-background.png" width = "70">
 	<h1>Life Science Search Engine </h1>
 	<p>Project under supervision of Dr. Wajid</p>
+	<small><a href="https://github.com/hunble/lifesciencescrapping" target="_blank">Source Code - GitHub</a></small>
 </div>
 
 
@@ -35,7 +37,45 @@
  	    </div>
 	</div>
 </div>
-
+</br>
+<div class="container">
+	<div class="row" id = "cards_view">
+	
+		<div class="col-md-3">
+			<div class="card">
+				<image style = "height:100px" class="card-img-top" src="http://gsa.github.io/datagov-presentations/CKANcon/images/logo-with-flag.svg"></image>
+				<div class="card-body">
+					<h4 class="card-title">Card title</h4>
+					<p class="card-text">Some example text. Some example text.</p>
+					<a href="#" class="card-link">Card link</a>
+					<a href="#" class="card-link">Another link</a>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="card">
+				<image style = "height:100px" class="card-img-top" src="http://gsa.github.io/datagov-presentations/CKANcon/images/logo-with-flag.svg"></image>
+				<div class="card-body">
+					<h4 class="card-title">Card title</h4>
+					<p class="card-text">Some example text. Some example text.</p>
+					<a href="#" class="card-link">Card link</a>
+					<a href="#" class="card-link">Another link</a>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="card">
+				<image style = "height:100px" class="card-img-top" src="http://gsa.github.io/datagov-presentations/CKANcon/images/logo-with-flag.svg"></image>
+				<div class="card-body">
+					<h4 class="card-title">Card title</h4>
+					<p class="card-text">Some example text. Some example text.</p>
+					<a href="#" class="card-link">Card link</a>
+					<a href="#" class="card-link">Another link</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 
 <div class="container">
   <div class="row">
@@ -90,6 +130,8 @@ function loadDoc(pageNumber=0) {
 	cleanView()
 	showStatusView()
 
+	loadAllInOne()
+	
 	totalPages(document.getElementById("search_input").value)
 
 	document.getElementById("search_status").innerHTML = "👨‍💻 Loading..."
@@ -134,6 +176,31 @@ function loadDoc(pageNumber=0) {
 }
 
 
+function loadAllInOne() {
+
+	totalPages(document.getElementById("search_input").value)
+
+	
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		console.log(this.status)
+
+		if (this.readyState == 4 && this.status == 200) {
+
+			var records =  JSON.parse(this.responseText)
+		
+			for (i = 0; i < records.length; i++) {
+				addCards(records[i].title, records[i].summary,records[i].siteLink, records[i].sourceImage)
+			}
+		};
+	}
+		var url = "/api/allInOne?query="+document.getElementById("search_input").value
+		xhttp.open("GET", url, true);
+		xhttp.send();
+	
+}
+
+
 function totalPages(query) {
 
 	var xhttp = new XMLHttpRequest();
@@ -174,7 +241,12 @@ function cleanTable(){
 function cleanView() {
 	var x = document.getElementById("status_view");
 	var y = document.getElementById("results_view");
+	var z = document.getElementById("cards_view");
 
+	while (z.firstChild) {
+		z.removeChild(z.firstChild)
+	}
+	
 	document.getElementById("resutls_for").innerHTML = "Results"
 
 
@@ -361,6 +433,53 @@ function addRow2(title,summary,dataLink,siteLink, siteName, siteImage)
 	row.appendChild(cell0);
 
 	tabBody.appendChild(row);
+}
+
+
+function addCards(title, summary, link, imageSrc, withRow){
+
+	var cards_view = document.getElementById("cards_view");
+	
+	col = document.createElement("div");
+	col.setAttribute("class", "col-md-4");
+	
+	card = document.createElement("div");
+	card.setAttribute("class", "card");
+	card.setAttribute("style", "width:100%");
+
+	image = document.createElement("img");
+	image.setAttribute("class", "card-img-top");
+	image.setAttribute("style", "padding: 10%; max-height:150px;");
+	image.setAttribute("src", imageSrc);
+	
+	card_body = document.createElement("div");
+	card_body.setAttribute("class", "card-body");
+	
+	h4 = document.createElement("h4");
+	h4.setAttribute("class", "card-title");
+	h4.appendChild(document.createTextNode(title))
+	
+	p = document.createElement("p");
+	p.setAttribute("class", "card-text");
+	p.appendChild(document.createTextNode(summary))
+	
+	a = document.createElement("a")
+	a.target="_blank"
+	a.href = link
+	a.appendChild(document.createTextNode("Visit Website"));
+
+	
+	card_body.appendChild(h4)
+	card_body.appendChild(p)
+	card_body.appendChild(a)
+	
+	card.appendChild(image)
+	card.appendChild(card_body)
+	
+	col.appendChild(card)
+	
+	cards_view.appendChild(col)
+
 }
 
 

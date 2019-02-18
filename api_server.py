@@ -9,6 +9,7 @@ import ncbi as ncbi
 import dataGov as gov
 import Result
 import math
+import allInOne
 
 app = Flask(__name__)
 api = Api(app)
@@ -48,6 +49,18 @@ def get_resource(path):  # pragma: no cover
     content = get_file(complete_path)
     return Response(content, mimetype=mimetype)
 
+class AllInOne(Resource):
+    def get(self):
+		args = request.args
+		print (args) # For debugging
+		query = args['query']
+		print("A search made for: ", query)
+
+		result = allInOne.allInOne(query)
+
+		return jsonify(result)
+
+	
 class Search(Resource):
     def get(self):
         args = request.args
@@ -127,8 +140,9 @@ class Pages(Resource):
 
         return jsonify(result)
 
-api.add_resource(Search, '/api/search', endpoint='search') # Route_3
-api.add_resource(Pages, '/api/pages', endpoint='pages') # Route_3
+api.add_resource(Search, '/api/search', endpoint='search') # Route_1
+api.add_resource(Pages, '/api/pages', endpoint='pages') # Route_2
+api.add_resource(AllInOne, '/api/allInOne', endpoint='allInOne') # Route_3
 
 
 if __name__ == '__main__':

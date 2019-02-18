@@ -39,8 +39,7 @@ http://hunle.pythonanywhere.com/api/search?query=cancer&pageNumber=0&pageSize=30
 
 ## Demo
 
-For demo please visit : [Here]("http://hunle.pythonanywhere.com")
-
+For demo please visit : [Here](http://hunle.pythonanywhere.com)
 ## Authors
 
 * **Muhammad Hunble Dhillon** [LinkedIn](https://www.linkedin.com/in/muhammad-hunble-dhillon-b64b84a0/)
@@ -60,4 +59,4 @@ See also the list of [contributors](https://github.com/your/project/contributors
 * [Requests](http://docs.python-requests.org/en/master/)
 * [Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/bs4/doc)
 * [xmljson](https://pydigger.com/pypi/xmljson)
-* [Python Anywhere]("https://www.pythonanywhere.com")
+* [Python Anywhere](https://www.pythonanywhere.com)
